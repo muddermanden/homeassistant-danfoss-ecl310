@@ -1,0 +1,205 @@
+# Starter dashboard for packages/ecl310.yaml
+#
+# Uses only entities from packages/ecl310.yaml and core Home Assistant cards (no HACS needed).
+# Settings → Dashboards → Add dashboard → "New dashboard from scratch" → ⋮ → Edit → ⋮ → Raw configuration
+# editor → paste this file.
+#
+# The schematic card needs your own copy of the Danfoss A266 drawing as /config/www/ecl310/a266.png
+# (served as /local/ecl310/a266.png). See dashboard/README.md. Without it, delete that card.
+# The left/top positions fit the 1205x756 px A266.1 drawing; adjust them if your drawing differs.
+
+title: Heating
+views:
+  - title: Heating
+    path: heating
+    type: sections
+    max_columns: 3
+    badges:
+      - type: entity
+        entity: binary_sensor.ecl_modbus_online
+      - type: entity
+        entity: binary_sensor.ecl_alarm
+      - type: entity
+        entity: sensor.ecl_controller_time
+    sections:
+      - type: grid
+        column_span: 3
+        cards:
+          - type: heading
+            heading: Schematic
+          - type: picture-elements
+            image: /local/ecl310/a266.png
+            grid_options: {columns: full}
+            elements:
+            # Controller time
+            - type: state-label
+              entity: sensor.ecl_controller_time
+              style: {left: "34.0%", top: "5.8%", color: "#000", font-weight: 600}
+            # S1 outdoor
+            - type: state-label
+              entity: sensor.s1_outdoor_temperature_sensor
+              style: {left: "9.9%", top: "2.2%", color: "#000", font-weight: 600}
+            # S3 heating flow
+            - type: state-label
+              entity: sensor.s3_flow_temperature_sensor_circuit_1
+              style: {left: "55.6%", top: "13.8%", color: "#000", font-weight: 600}
+            # desired heating flow
+            - type: state-label
+              entity: sensor.desired_flow_temperature_circuit_1
+              style: {left: "55.6%", top: "16.2%", color: "#000", font-weight: 600}
+            # return limit, circuit 1
+            - type: state-label
+              entity: sensor.desired_return_temperature_circuit_1
+              style: {left: "39.0%", top: "37.4%", color: "#000", font-weight: 600}
+            # V2 valve %
+            - type: state-label
+              entity: sensor.v2_analog_valve_heating_circuit_1
+              style: {left: "24.9%", top: "50.3%", color: "#000", font-weight: 600}
+            # S4 DHW flow
+            - type: state-label
+              entity: sensor.s4_dhw_flow_temperature_sensor_circuit_2
+              style: {left: "55.6%", top: "56.2%", color: "#000", font-weight: 600}
+            # desired DHW flow
+            - type: state-label
+              entity: sensor.desired_dhw_flow_temperature_circuit_2
+              style: {left: "55.6%", top: "58.5%", color: "#000", font-weight: 600}
+            # return limit, DHW
+            - type: state-label
+              entity: sensor.desired_dhw_return_temperature_circuit_2
+              style: {left: "39.0%", top: "79.7%", color: "#000", font-weight: 600}
+            # V1 valve %
+            - type: state-label
+              entity: sensor.v1_analog_valve_dhw_circuit_2
+              style: {left: "24.9%", top: "92.6%", color: "#000", font-weight: 600}
+            # P2 heating pump: green while running
+            - type: state-icon
+              entity: binary_sensor.p2_heating_pump
+              icon: mdi:pump
+              style: {left: "66.4%", top: "21.2%"}
+            # P1 DHW pump: green while running
+            - type: state-icon
+              entity: binary_sensor.p1_dhw_circulation_pump
+              icon: mdi:pump
+              style: {left: "81.3%", top: "84.7%"}
+            # Amber warning over the controller while any output is in manual override or an alarm is active
+            - type: conditional
+              conditions:
+                - condition: or
+                  conditions:
+                    - condition: state
+                      entity: binary_sensor.ecl_alarm
+                      state: "on"
+                    - condition: state
+                      entity: binary_sensor.p1_manual_override
+                      state: "on"
+                    - condition: state
+                      entity: binary_sensor.p2_manual_override
+                      state: "on"
+                    - condition: state
+                      entity: binary_sensor.m1_manual_override
+                      state: "on"
+                    - condition: state
+                      entity: binary_sensor.m2_manual_override
+                      state: "on"
+              elements:
+                - type: icon
+                  icon: mdi:alert
+                  style: {left: "50%", top: "8%", color: "#e65100", "--mdc-icon-size": 40px}
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Space heating (circuit 1)
+          - type: tile
+            entity: sensor.s3_flow_temperature_sensor_circuit_1
+            name: Flow (S3)
+          - type: tile
+            entity: sensor.desired_flow_temperature_circuit_1
+            name: Desired flow
+          - type: tile
+            entity: sensor.heating_flow_deviation
+            name: Flow deviation
+          - type: tile
+            entity: sensor.desired_room_temperature_circuit_1
+            name: Desired room
+          - type: tile
+            entity: binary_sensor.p2_heating_pump
+            name: Pump P2
+          - type: tile
+            entity: sensor.m2_motorized_control_valve_circuit_1
+            name: Valve M2
+          - type: entities
+            entities:
+              - entity: sensor.mode_heating_circuit_1
+                name: Mode
+              - entity: sensor.status_heating_circuit_1
+                name: Status
+              - entity: sensor.comfort_temperature
+              - entity: sensor.setback_temperature
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Hot water (circuit 2)
+          - type: tile
+            entity: sensor.s4_dhw_flow_temperature_sensor_circuit_2
+            name: DHW flow (S4)
+          - type: tile
+            entity: sensor.desired_dhw_flow_temperature_circuit_2
+            name: Desired DHW
+          - type: tile
+            entity: sensor.dhw_flow_deviation
+            name: DHW deviation
+          - type: tile
+            entity: binary_sensor.p1_dhw_circulation_pump
+            name: Pump P1
+          - type: tile
+            entity: sensor.m1_motorized_control_valve_circuit_2
+            name: Valve M1
+          - type: entities
+            entities:
+              - entity: sensor.mode_dhw_circuit_2
+                name: Mode
+              - entity: sensor.status_dhw_circuit_2
+                name: Status
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Controller
+          - type: tile
+            entity: sensor.s1_outdoor_temperature_sensor
+            name: Outdoor (S1)
+          - type: entities
+            title: Overrides
+            entities:
+              - binary_sensor.m1_manual_override
+              - binary_sensor.m2_manual_override
+              - binary_sensor.p1_manual_override
+              - binary_sensor.p2_manual_override
+              - binary_sensor.a1_manual_override
+              - sensor.a1_alarm
+          - type: entities
+            title: Identification
+            entities:
+              - sensor.ecl_application
+              - sensor.ecl_firmware_version
+              - sensor.ecl_controller_time
+
+      - type: grid
+        column_span: 3
+        cards:
+          - type: heading
+            heading: Last 24 hours
+          - type: history-graph
+            hours_to_show: 24
+            grid_options: {columns: full}
+            entities:
+              - entity: sensor.s1_outdoor_temperature_sensor
+                name: Outdoor
+              - entity: sensor.s3_flow_temperature_sensor_circuit_1
+                name: Heating flow
+              - entity: sensor.desired_flow_temperature_circuit_1
+                name: Desired flow
+              - entity: sensor.s4_dhw_flow_temperature_sensor_circuit_2
+                name: DHW flow
