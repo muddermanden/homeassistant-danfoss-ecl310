@@ -33,6 +33,8 @@ def main() -> None:
     parser.add_argument("dst", type=Path, help="cleaned SVG, e.g. ../drawings/a266.svg")
     parser.add_argument("--config", type=Path, help="config with optional circuit_titles: [circuit 1, circuit 2]")
     args = parser.parse_args()
+    if not args.src.is_file():
+        parser.exit(1, f"Drawing not found: {args.src}\n")
     titles = DEFAULT_TITLES
     if args.config:
         import yaml

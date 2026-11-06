@@ -29,7 +29,7 @@ modbus:
         precision: 1
         scan_interval: 30
 
-      # PNU 10202. Room temperature sensor, circuit 1. Optional. 192 = not fitted.
+      # PNU 10202. Room temperature sensor, circuit 1. Optional. Not connected: the display shows "- -" and Modbus returns 192.
       - name: "S2 Room temperature sensor"
         unique_id: ecl310_s2_room_temperature
         address: 10201
@@ -68,7 +68,7 @@ modbus:
         precision: 1
         scan_interval: 30
 
-      # PNU 10205. Return temperature sensor, circuit 1. Optional. 192 = not fitted.
+      # PNU 10205. Return temperature sensor, circuit 1. Optional. Not connected: the display shows "- -" and Modbus returns 192.
       - name: "S5 Return temperature sensor, circuit 1"
         unique_id: ecl310_s5_return_temperature_circuit_1
         address: 10204
@@ -81,7 +81,7 @@ modbus:
         precision: 1
         scan_interval: 30
 
-      # PNU 10206. DHW return temperature sensor, circuit 2. Optional. 192 = not fitted.
+      # PNU 10206. DHW return temperature sensor, circuit 2. Optional. Not connected: the display shows "- -" and Modbus returns 192.
       - name: "S6 DHW return temperature sensor, circuit 2"
         unique_id: ecl310_s6_return_temperature_circuit_2
         address: 10205

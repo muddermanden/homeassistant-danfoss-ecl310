@@ -16,6 +16,8 @@ _ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
 _ap.add_argument("--config", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "config.local.yaml"))
 _ap.add_argument("--states", help="optional states/entities dump for the entity check")
 ARGS = _ap.parse_args()
+if not os.path.isfile(ARGS.config):
+    sys.exit(f"Config not found: {ARGS.config}\nCreate it with: cp config.example.yaml config.local.yaml")
 settings.load(ARGS.config)
 OUT_DIR = settings.path("output_dir", "build")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
