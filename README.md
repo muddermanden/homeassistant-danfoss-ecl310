@@ -79,6 +79,19 @@ In the author's setup:
 A heating dashboard built on this package also uses room temperature sensors (Hue, Zigbee, Matter) aggregated
 into average / min / max / coldest / warmest room, plus a weather forecast. Those parts aren't in this repo.
 
+## Dashboard
+
+[`dashboard/`](dashboard/) has two options:
+
+- a **starter dashboard** (ready-made YAML) that uses only `ecl310.yaml` entities and core cards;
+- a **generator** that builds the full schematic dashboard: the Danfoss A266 diagram with live values, coloured
+  pipes and animated pumps. The dashboard YAML is generated from your copy of the drawing and one config file;
+  it isn't committed. The Danfoss drawing isn't included either: the README explains how to save your own copy
+  from Leanheat Monitor.
+
+[`packages/heating_rooms.yaml`](packages/heating_rooms.yaml) is the helper package the schematic dashboard needs:
+room statistics and a text helper. It is not the dashboard itself.
+
 ## Disclaimer
 
 Not affiliated with or endorsed by Danfoss. Tested on one ECL Comfort 310 with A266.1. Use at your own risk. Check

@@ -1,0 +1,56 @@
+# Copy to config.local.yaml (git-ignored) and edit. Paths are relative to this file.
+#   cp config.example.yaml config.local.yaml
+#   python generator/build.py --config config.local.yaml
+
+# Your copy of the Danfoss A266 drawing (SVG from Leanheat Monitor, cleaned with generator/clean_drawing.py,
+# see README). Not in the repo.
+drawing: drawings/a266.svg
+# Section titles clean_drawing.py writes over the two "Circuit description" placeholders.
+circuit_titles: [Space heating, Domestic hot water]
+# Where the generated dashboard YAML/JSON and background SVGs are written (git-ignored).
+output_dir: build
+
+# Dashboard URL (Settings → Dashboards → your dashboard's URL) and where you copy the background SVGs
+# (/config/www/heating/ is served as /local/heating/).
+dashboard_path: dashboard-heating
+image_url: /local/heating/a266-schematic.svg
+tv_image_url: /local/heating/a266-schematic-tv.svg
+
+# Optional hardware next to the ECL. Off = every card, value and colour rule that needs it is left out.
+features:
+  heat_meter: false        # district-heating meter (e.g. wmbusmeters → MQTT) + packages/ecl310_extras.yaml
+  circulation_pump: false  # circulation pump with its own sensors (e.g. Grundfos via ESPHome)
+  rooms: false             # room statistics from packages/heating_rooms.yaml (label "Heated room")
+
+# Drawing variants. direct_heating redraws circuit 1 as direct heating with a mixing loop (the author's house);
+# off = the original Danfoss A266.1 drawing with heat exchanger 1.
+variant:
+  direct_heating: false
+  one_pipe: true           # direct_heating only: radiators as a one-pipe loop
+  dynamic_colours: true    # direct_heating only: pipes coloured by temperature
+  fixed_scale: true        # fixed 30–60 °C pipe colour scale
+  noflow_grey: true        # heat meter values grey while it reports no flow
+
+tv:
+  view: true               # full-screen TV view (subview /<dashboard_path>/tv)
+  media_player:            # e.g. media_player.living_room_tv to add "Cast to TV" buttons
+
+weather:                   # e.g. weather.forecast_home, shown in the overview text
+network_tracker:           # e.g. device_tracker.ecl310 (UniFi) for IP/MAC rows on the Diagnostics view
+modbus_host_attribute: false  # true if your binary_sensor.ecl_modbus_online has a 'host' attribute
+pump_wiring_swapped_entity:   # binary_sensor that is on while P1/P2 are wired to swapped terminals
+
+heat_cut_out_c: 20         # your ECL "Heat cut-out" setting (PNU 11179): summer label above this outdoor temperature
+rooms_label: heated_room   # label id of the room temperature sensors (features.rooms)
+other_rooms: []            # rooms shown but not counted: [{name: Garage, entity: sensor.garage_temperature}]
+overview:
+  radiators: radiators     # text in the overview flow, e.g. "8 radiators (one-pipe)"
+
+# Your entity ids, if they differ from the generator's generic ones. Exact ids first, then prefixes.
+# Generic ids: ECL ones as in packages/ecl310.yaml; heat meter sensor.heat_meter_* (flow_temperature,
+# return_temperature, power, volume_flow, total_energy_consumption, ...), binary_sensor.heat_meter_flowing,
+# sensor.heat_meter_temperature_difference, sensor.heat_meter_energy_daily/yearly, sensor.heat_meter_volume_daily/yearly;
+# pump sensor.circulation_pump_* (flow, power, speed, head, medium_temperature, ...).
+entities:
+  exact: {}
+  prefixes: {}

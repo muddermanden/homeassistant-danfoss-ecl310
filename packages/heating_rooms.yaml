@@ -1,0 +1,113 @@
+# packages/heating_rooms.yaml  ->  copy to /config/packages/ (needed by the generated schematic dashboard)
+# Room temperature statistics for rooms heated by radiators (directly or from a neighbouring room).
+# Members: every sensor.* entity with the label "Heated room" (label_id heated_room).
+# A newly labelled sensor is picked up the next time any member changes.
+#
+# "Heating Dashboard Text" (at the end) is always needed: the schematic uses it for static text.
+# The room sensors are only used with features.rooms: true.
+
+template:
+  - sensor:
+      - name: "Heated Rooms Average Temperature"
+        unique_id: heated_rooms_average_temperature
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        icon: mdi:home-thermometer
+        availability: >
+          {{ label_entities('heated_room') | select('match', 'sensor[.]') | map('states')
+             | select('is_number') | list | count > 0 }}
+        state: >
+          {% set v = label_entities('heated_room') | select('match', 'sensor[.]') | map('states')
+                     | select('is_number') | map('float') | list %}
+          {{ (v | sum / v | count) | round(1) }}
+        attributes:
+          rooms: >
+            {{ label_entities('heated_room') | select('match', 'sensor[.]') | map('states')
+               | select('is_number') | list | count }}
+
+      - name: "Heated Rooms Minimum Temperature"
+        unique_id: heated_rooms_minimum_temperature
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        icon: mdi:thermometer-chevron-down
+        availability: >
+          {{ label_entities('heated_room') | select('match', 'sensor[.]') | map('states')
+             | select('is_number') | list | count > 0 }}
+        state: >
+          {{ label_entities('heated_room') | select('match', 'sensor[.]') | map('states')
+             | select('is_number') | map('float') | min | round(1) }}
+
+      - name: "Heated Rooms Maximum Temperature"
+        unique_id: heated_rooms_maximum_temperature
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        icon: mdi:thermometer-chevron-up
+        availability: >
+          {{ label_entities('heated_room') | select('match', 'sensor[.]') | map('states')
+             | select('is_number') | list | count > 0 }}
+        state: >
+          {{ label_entities('heated_room') | select('match', 'sensor[.]') | map('states')
+             | select('is_number') | map('float') | max | round(1) }}
+
+      - name: "Coldest Heated Room"
+        unique_id: coldest_heated_room
+        icon: mdi:snowflake-thermometer
+        state: >
+          {% set ns = namespace(e=none, v=999) %}
+          {% for e in label_entities('heated_room') | select('match', 'sensor[.]') if states(e) | is_number %}
+            {% if states(e) | float < ns.v %}{% set ns.e, ns.v = e, states(e) | float %}{% endif %}
+          {% endfor %}
+          {{ (area_name(ns.e) or state_attr(ns.e, 'friendly_name')) if ns.e else 'unknown' }}
+
+      - name: "Warmest Heated Room"
+        unique_id: warmest_heated_room
+        icon: mdi:sun-thermometer
+        state: >
+          {% set ns = namespace(e=none, v=-999) %}
+          {% for e in label_entities('heated_room') | select('match', 'sensor[.]') if states(e) | is_number %}
+            {% if states(e) | float > ns.v %}{% set ns.e, ns.v = e, states(e) | float %}{% endif %}
+          {% endfor %}
+          {{ (area_name(ns.e) or state_attr(ns.e, 'friendly_name')) if ns.e else 'unknown' }}
+
+      # Deviation from the ECL desired room temperature: colours the room values on the schematic.
+      - name: "Heated Rooms Average Deviation"
+        unique_id: heated_rooms_average_deviation
+        unit_of_measurement: "K"
+        state_class: measurement
+        icon: mdi:plus-minus-variant
+        availability: "{{ states('sensor.heated_rooms_average_temperature') | is_number and states('sensor.desired_room_temperature_circuit_1') | is_number }}"
+        state: "{{ (states('sensor.heated_rooms_average_temperature') | float - states('sensor.desired_room_temperature_circuit_1') | float) | round(1) }}"
+        attributes:
+          note: "Average minus desired room temperature"
+
+      - name: "Heated Rooms Minimum Deviation"
+        unique_id: heated_rooms_minimum_deviation
+        unit_of_measurement: "K"
+        state_class: measurement
+        icon: mdi:plus-minus-variant
+        availability: "{{ states('sensor.heated_rooms_minimum_temperature') | is_number and states('sensor.desired_room_temperature_circuit_1') | is_number }}"
+        state: "{{ (states('sensor.heated_rooms_minimum_temperature') | float - states('sensor.desired_room_temperature_circuit_1') | float) | round(1) }}"
+        attributes:
+          note: "Minimum minus desired room temperature"
+
+      - name: "Heated Rooms Maximum Deviation"
+        unique_id: heated_rooms_maximum_deviation
+        unit_of_measurement: "K"
+        state_class: measurement
+        icon: mdi:plus-minus-variant
+        availability: "{{ states('sensor.heated_rooms_maximum_temperature') | is_number and states('sensor.desired_room_temperature_circuit_1') | is_number }}"
+        state: "{{ (states('sensor.heated_rooms_maximum_temperature') | float - states('sensor.desired_room_temperature_circuit_1') | float) | round(1) }}"
+        attributes:
+          note: "Maximum minus desired room temperature"
+
+      # Static text on the heating schematic: picture-elements state-labels show only their prefix
+      # when pointed at this empty attribute (the label and value elements then share font and baseline).
+      - name: "Heating Dashboard Text"
+        unique_id: heating_dashboard_text
+        icon: mdi:format-text
+        state: "ok"
+        attributes:
+          blank: ""
