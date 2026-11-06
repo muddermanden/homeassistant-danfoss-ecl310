@@ -1,0 +1,775 @@
+# packages/ecl310.yaml  ->  copy to /config/packages/ecl310.yaml
+# Danfoss ECL Comfort 310 — application A266.1
+# PNU = address in LeanHeat / ECL Tool. Home Assistant address = PNU - 1.
+# Unused sensors stay in YAML; hide them in the UI.
+
+modbus:
+  - name: ecl310
+    type: tcp
+    # Change to your ECL 310 IP address (Modbus TCP must be enabled on the controller).
+    host: 192.168.1.100
+    port: 502
+    timeout: 10
+    delay: 1
+    message_wait_milliseconds: 30
+
+    sensors:
+      # --- Measured temperatures (raw, PNU 10201–10206) ---
+
+      # PNU 10201. Outdoor temperature sensor. Required in A266.1.
+      - name: "S1 Outdoor temperature sensor"
+        unique_id: ecl310_s1_outdoor_temperature
+        address: 10200
+        input_type: holding
+        data_type: int16
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        scale: 0.01
+        precision: 1
+        scan_interval: 30
+
+      # PNU 10202. Room temperature sensor, circuit 1. Optional. 192 = not fitted.
+      - name: "S2 Room temperature sensor"
+        unique_id: ecl310_s2_room_temperature
+        address: 10201
+        input_type: holding
+        data_type: int16
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        scale: 0.01
+        precision: 1
+        scan_interval: 30
+
+      # PNU 10203. Flow temperature sensor, heating circuit 1. Required.
+      - name: "S3 Flow temperature sensor, circuit 1"
+        unique_id: ecl310_s3_flow_temperature_circuit_1
+        address: 10202
+        input_type: holding
+        data_type: int16
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        scale: 0.01
+        precision: 1.0
+        scan_interval: 30
+
+      # PNU 10204. DHW flow temperature sensor, circuit 2. Required.
+      - name: "S4 DHW flow temperature sensor, circuit 2"
+        unique_id: ecl310_s4_dhw_flow_temperature_circuit_2
+        address: 10203
+        input_type: holding
+        data_type: int16
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        scale: 0.01
+        precision: 1
+        scan_interval: 30
+
+      # PNU 10205. Return temperature sensor, circuit 1. Optional. 192 = not fitted.
+      - name: "S5 Return temperature sensor, circuit 1"
+        unique_id: ecl310_s5_return_temperature_circuit_1
+        address: 10204
+        input_type: holding
+        data_type: int16
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        scale: 0.01
+        precision: 1
+        scan_interval: 30
+
+      # PNU 10206. DHW return temperature sensor, circuit 2. Optional. 192 = not fitted.
+      - name: "S6 DHW return temperature sensor, circuit 2"
+        unique_id: ecl310_s6_return_temperature_circuit_2
+        address: 10205
+        input_type: holding
+        data_type: int16
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        scale: 0.01
+        precision: 1
+        scan_interval: 30
+
+      # --- Setpoints / references ---
+
+      # PNU 11252. Desired room temperature, circuit 1.
+      - name: "Desired room temperature, circuit 1"
+        unique_id: ecl310_desired_room_circuit_1
+        address: 11251
+        input_type: holding
+        data_type: int16
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        scale: 0.01
+        precision: 1
+        scan_interval: 30
+
+      # PNU 11253. Desired flow temperature, heating circuit 1.
+      - name: "Desired flow temperature, circuit 1"
+        unique_id: ecl310_desired_flow_circuit_1
+        address: 11252
+        input_type: holding
+        data_type: int16
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        scale: 0.01
+        precision: 1
+        scan_interval: 30
+
+      # PNU 11255. Return temperature limit, circuit 1.
+      - name: "Desired return temperature, circuit 1"
+        unique_id: ecl310_desired_return_circuit_1
+        address: 11254
+        input_type: holding
+        data_type: int16
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        scale: 0.01
+        precision: 1
+        scan_interval: 30
+
+      # PNU 12254. Desired DHW flow temperature, circuit 2.
+      - name: "Desired DHW flow temperature, circuit 2"
+        unique_id: ecl310_desired_dhw_circuit_2
+        address: 12253
+        input_type: holding
+        data_type: int16
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        scale: 0.01
+        precision: 1
+        scan_interval: 30
+
+      # PNU 12256. DHW return temperature limit, circuit 2.
+      - name: "Desired DHW return temperature, circuit 2"
+        unique_id: ecl310_desired_dhw_return_circuit_2
+        address: 12255
+        input_type: holding
+        data_type: int16
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        scale: 0.01
+        precision: 1
+        scan_interval: 30
+
+      # PNU 11179. Comfort setpoint.
+      - name: "Comfort temperature"
+        unique_id: ecl310_comfort_temperature
+        address: 11178
+        input_type: holding
+        data_type: int16
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        scale: 1.0
+        precision: 1
+        scan_interval: 60
+
+      # PNU 11180. Setback setpoint.
+      - name: "Setback temperature"
+        unique_id: ecl310_setback_temperature
+        address: 11179
+        input_type: holding
+        data_type: int16
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        scale: 0.1
+        precision: 1
+        scan_interval: 60
+
+      # --- 3-point valve pulses (short 0/1) ---
+
+      # PNU 4000. Triac 1 = M1 open pulse, DHW circuit 2.
+      - name: "M1 opening"
+        unique_id: ecl310_m1_opening
+        address: 3999
+        input_type: holding
+        data_type: int16
+        scan_interval: 5
+
+      # PNU 4001. Triac 2 = M1 close pulse.
+      - name: "M1 closing"
+        unique_id: ecl310_m1_closing
+        address: 4000
+        input_type: holding
+        data_type: int16
+        scan_interval: 5
+
+      # PNU 4002. Triac 3 = M2 open pulse, heating circuit 1.
+      - name: "M2 opening"
+        unique_id: ecl310_m2_opening
+        address: 4001
+        input_type: holding
+        data_type: int16
+        scan_interval: 5
+
+      # PNU 4003. Triac 4 = M2 close pulse.
+      - name: "M2 closing"
+        unique_id: ecl310_m2_closing
+        address: 4002
+        input_type: holding
+        data_type: int16
+        scan_interval: 5
+
+      # PNU 4004. Triac 5. Not used on A266.1.
+      - name: "Triac 5"
+        unique_id: ecl310_triac_5
+        address: 4003
+        input_type: holding
+        data_type: int16
+        scan_interval: 5
+
+      # PNU 4005. Triac 6. Not used on A266.1.
+      - name: "Triac 6"
+        unique_id: ecl310_triac_6
+        address: 4004
+        input_type: holding
+        data_type: int16
+        scan_interval: 5
+
+      # --- Pumps and alarm ---
+
+      # PNU 4006. Circulation pump P1, DHW circuit 2. 1 = On.
+      - name: "P1 Circulation pump DHW raw"
+        unique_id: ecl310_p1_raw
+        address: 4005
+        input_type: holding
+        data_type: int16
+        scan_interval: 15
+
+      # PNU 4007. Circulation pump P2, heating circuit 1. 1 = On.
+      - name: "P2 Circulation pump heating raw"
+        unique_id: ecl310_p2_raw
+        address: 4006
+        input_type: holding
+        data_type: int16
+        scan_interval: 15
+
+      # PNU 4009. Alarm output A1.
+      - name: "A1 Alarm raw"
+        unique_id: ecl310_a1_raw
+        address: 4008
+        input_type: holding
+        data_type: int16
+        scan_interval: 30
+
+      # --- Analog valve position (LeanHeat Valve_Position_V1 / V2) ---
+
+      # PNU 4016. Valve position V1, DHW circuit 2. Scale 10 → percent.
+      - name: "V1 Analog valve, DHW circuit 2"
+        unique_id: ecl310_v1_valve_position
+        address: 4015
+        input_type: holding
+        data_type: int16
+        unit_of_measurement: "%"
+        state_class: measurement
+        scale: 0.1
+        precision: 1
+        scan_interval: 15
+
+      # PNU 4017. Valve position V2, heating circuit 1. Scale 10 → percent.
+      - name: "V2 Analog valve, heating circuit 1"
+        unique_id: ecl310_v2_valve_position
+        address: 4016
+        input_type: holding
+        data_type: int16
+        unit_of_measurement: "%"
+        state_class: measurement
+        scale: 0.1
+        precision: 1
+        scan_interval: 15
+
+      # --- Output override (raw) ---
+
+      # PNU 4060. 0 Auto, 1 Stop, 2 Close, 3 Open.
+      - name: "M1 override raw"
+        unique_id: ecl310_m1_override_raw
+        address: 4059
+        input_type: holding
+        data_type: int16
+        scan_interval: 30
+
+      # PNU 4062.
+      - name: "M2 override raw"
+        unique_id: ecl310_m2_override_raw
+        address: 4060
+        input_type: holding
+        data_type: int16
+        scan_interval: 30
+
+      # PNU 4066. 0 Auto, 1 Off, 2 On.
+      - name: "P1 override raw"
+        unique_id: ecl310_p1_override_raw
+        address: 4065
+        input_type: holding
+        data_type: int16
+        scan_interval: 30
+
+      # PNU 4067.
+      - name: "P2 override raw"
+        unique_id: ecl310_p2_override_raw
+        address: 4066
+        input_type: holding
+        data_type: int16
+        scan_interval: 30
+
+      # PNU 4069. Manual override for alarm output A1.
+      - name: "A1 override raw"
+        unique_id: ecl310_a1_override_raw
+        address: 4068
+        input_type: holding
+        data_type: int16
+        scan_interval: 30
+
+      # PNU 4077. Second manual override register at M2, circuit 1 (shown with the M2 hand in the Danfoss UI).
+      - name: "M2 override 2 raw"
+        unique_id: ecl310_m2_override_2_raw
+        address: 4076
+        input_type: holding
+        data_type: int16
+        scan_interval: 30
+
+      # PNU 4076. Second manual override register at M1, circuit 2 (shown with the M1 hand in the Danfoss UI).
+      - name: "M1 override 2 raw"
+        unique_id: ecl310_m1_override_2_raw
+        address: 4075
+        input_type: holding
+        data_type: int16
+        scan_interval: 30
+
+      # --- Mode / status (raw) ---
+
+      # PNU 4201. Circuit 1 mode: 0 Manual, 1 Auto, 2 Comfort, 3 Setback, 4 Frost.
+      - name: "Mode heating raw"
+        unique_id: ecl310_mode_heating_raw
+        address: 4200
+        input_type: holding
+        data_type: int16
+        scan_interval: 30
+
+      # PNU 4202. Circuit 2 mode. Same enum.
+      - name: "Mode DHW raw"
+        unique_id: ecl310_mode_dhw_raw
+        address: 4201
+        input_type: holding
+        data_type: int16
+        scan_interval: 30
+
+      # PNU 4211. Circuit 1 status: 0 Setback, 1 Pre-comfort, 2 Comfort, 3 Pre-setback.
+      - name: "Status heating raw"
+        unique_id: ecl310_status_heating_raw
+        address: 4210
+        input_type: holding
+        data_type: int16
+        scan_interval: 30
+
+      # PNU 4212. Circuit 2 status. Same enum.
+      - name: "Status DHW raw"
+        unique_id: ecl310_status_dhw_raw
+        address: 4211
+        input_type: holding
+        data_type: int16
+        scan_interval: 30
+
+      # --- Controller clock (raw, PNU 64045–64049, verified against local time 2026-10-28) ---
+
+      # PNU 64045. Controller clock, hour (0–23).
+      - name: "ECL clock hour raw"
+        unique_id: ecl310_clock_hour_raw
+        address: 64044
+        input_type: holding
+        data_type: int16
+        scan_interval: 60
+
+      # PNU 64046. Controller clock, minute.
+      - name: "ECL clock minute raw"
+        unique_id: ecl310_clock_minute_raw
+        address: 64045
+        input_type: holding
+        data_type: int16
+        scan_interval: 60
+
+      # PNU 64047. Controller clock, day of month.
+      - name: "ECL clock day raw"
+        unique_id: ecl310_clock_day_raw
+        address: 64046
+        input_type: holding
+        data_type: int16
+        scan_interval: 60
+
+      # PNU 64048. Controller clock, month (1–12).
+      - name: "ECL clock month raw"
+        unique_id: ecl310_clock_month_raw
+        address: 64047
+        input_type: holding
+        data_type: int16
+        scan_interval: 60
+
+      # PNU 64049. Controller clock, year.
+      - name: "ECL clock year raw"
+        unique_id: ecl310_clock_year_raw
+        address: 64048
+        input_type: holding
+        data_type: int16
+        scan_interval: 60
+
+      # --- Identification (raw, read hourly; decoding per danfoss-ecl README) ---
+
+      # PNU 35. Software version, packed major/minor (557 = 2.45).
+      - name: "ECL software version raw"
+        unique_id: ecl310_software_version_raw
+        address: 34
+        input_type: holding
+        data_type: int16
+        scan_interval: 3600
+
+      # PNU 2060. Application prefix, ASCII (65 = 'A').
+      - name: "ECL application prefix raw"
+        unique_id: ecl310_application_prefix_raw
+        address: 2059
+        input_type: holding
+        data_type: int16
+        scan_interval: 3600
+
+      # PNU 2061. Application type (266).
+      - name: "ECL application type raw"
+        unique_id: ecl310_application_type_raw
+        address: 2060
+        input_type: holding
+        data_type: int16
+        scan_interval: 3600
+
+      # PNU 2062. Application subtype (1 = A266.1).
+      - name: "ECL application subtype raw"
+        unique_id: ecl310_application_subtype_raw
+        address: 2061
+        input_type: holding
+        data_type: int16
+        scan_interval: 3600
+
+template:
+  - sensor:
+      - name: "M1 Motorized control valve, circuit 2"
+        unique_id: ecl310_m1_valve_state
+        icon: mdi:valve
+        state: >
+          {% if is_state('sensor.m1_opening', '1') %}
+            OPENING
+          {% elif is_state('sensor.m1_closing', '1') %}
+            CLOSING
+          {% else %}
+            STOPPED
+          {% endif %}
+        attributes:
+          pnu: "4000 / 4001"
+          note: "3-point actuator M1, DHW circuit 2. Pulses are often 1–3 s."
+
+      - name: "M2 Motorized control valve, circuit 1"
+        unique_id: ecl310_m2_valve_state
+        icon: mdi:valve
+        state: >
+          {% if is_state('sensor.m2_opening', '1') %}
+            OPENING
+          {% elif is_state('sensor.m2_closing', '1') %}
+            CLOSING
+          {% else %}
+            STOPPED
+          {% endif %}
+        attributes:
+          pnu: "4002 / 4003"
+          note: "3-point actuator M2, heating circuit 1. Use V2 for position %."
+
+      - name: "P1 Circulation pump, DHW, circuit 2"
+        unique_id: ecl310_p1_pump_state
+        icon: mdi:pump
+        state: >
+          {{ 'ON' if states('sensor.p1_circulation_pump_dhw_raw') | int(0) == 1 else 'OFF' }}
+        attributes:
+          pnu: 4006
+          note: "DHW circulation pump P1."
+
+      - name: "P2 Circulation pump, heating, circuit 1"
+        unique_id: ecl310_p2_pump_state
+        icon: mdi:pump
+        state: >
+          {{ 'ON' if states('sensor.p2_circulation_pump_heating_raw') | int(0) == 1 else 'OFF' }}
+        attributes:
+          pnu: 4007
+          note: "Heating circulation pump P2."
+
+      - name: "A1 Alarm"
+        unique_id: ecl310_a1_alarm
+        icon: mdi:alarm-light
+        state: >
+          {# HA turns a template result of exactly "None" into an empty state, so: "No alarm" #}
+          {{ 'Active' if states('sensor.a1_alarm_raw') | int(0) != 0 else 'No alarm' }}
+        attributes:
+          pnu: 4009
+          note: "Controller alarm output A1."
+
+      - name: "M1 override"
+        unique_id: ecl310_m1_override
+        icon: mdi:hand-back-right
+        # Values as in the Danfoss Operating Guide, 6.6 Output override.
+        state: >
+          {{ {'0': 'AUTO', '1': 'STOP', '2': 'CLOSE', '3': 'OPEN'}.get(states('sensor.m1_override_raw'), 'unknown') }}
+        attributes:
+          pnu: 4060
+
+      - name: "M2 override"
+        unique_id: ecl310_m2_override
+        icon: mdi:hand-back-right
+        # Values as in the Danfoss Operating Guide, 6.6 Output override.
+        state: >
+          {{ {'0': 'AUTO', '1': 'STOP', '2': 'CLOSE', '3': 'OPEN'}.get(states('sensor.m2_override_raw'), 'unknown') }}
+        attributes:
+          pnu: 4062
+
+      - name: "P1 override"
+        unique_id: ecl310_p1_override
+        icon: mdi:hand-back-right
+        # Values as in the Danfoss Operating Guide, 6.6 Output override.
+        state: >
+          {{ {'0': 'AUTO', '1': 'OFF', '2': 'ON'}.get(states('sensor.p1_override_raw'), 'unknown') }}
+        attributes:
+          pnu: 4066
+
+      - name: "P2 override"
+        unique_id: ecl310_p2_override
+        icon: mdi:hand-back-right
+        # Values as in the Danfoss Operating Guide, 6.6 Output override.
+        state: >
+          {{ {'0': 'AUTO', '1': 'OFF', '2': 'ON'}.get(states('sensor.p2_override_raw'), 'unknown') }}
+        attributes:
+          pnu: 4067
+
+      - name: "Mode heating circuit 1"
+        unique_id: ecl310_mode_heating
+        icon: mdi:cog
+        state: >
+          {% set v = states('sensor.mode_heating_raw') %}
+          {% set map = {
+            '0': 'MANUAL',
+            '1': 'SCHEDULE',
+            '2': 'COMFORT',
+            '3': 'SAVING',
+            '4': 'FROST PR.'
+          } %}
+          {{ map.get(v, 'Unknown') }}
+        attributes:
+          pnu: 4201
+          note: "Operating mode for heating circuit 1."
+
+      - name: "Mode DHW circuit 2"
+        unique_id: ecl310_mode_dhw
+        icon: mdi:cog
+        state: >
+          {% set v = states('sensor.mode_dhw_raw') %}
+          {% set map = {
+            '0': 'MANUAL',
+            '1': 'SCHEDULE',
+            '2': 'COMFORT',
+            '3': 'SAVING',
+            '4': 'FROST PR.'
+          } %}
+          {{ map.get(v, 'Unknown') }}
+        attributes:
+          pnu: 4202
+          note: "Operating mode for DHW circuit 2."
+
+      - name: "Status heating circuit 1"
+        unique_id: ecl310_status_heating
+        icon: mdi:information
+        state: >
+          {% set v = states('sensor.status_heating_raw') %}
+          {% set map = {
+            '0': 'SAVING',
+            '1': 'PRE-COMFORT',
+            '2': 'COMFORT',
+            '3': 'PRE-SAVING'
+          } %}
+          {{ map.get(v, 'Unknown') }}
+        attributes:
+          pnu: 4211
+
+      - name: "Status DHW circuit 2"
+        unique_id: ecl310_status_dhw
+        icon: mdi:information
+        state: >
+          {% set v = states('sensor.status_dhw_raw') %}
+          {% set map = {
+            '0': 'SAVING',
+            '1': 'PRE-COMFORT',
+            '2': 'COMFORT',
+            '3': 'PRE-SAVING'
+          } %}
+          {{ map.get(v, 'Unknown') }}
+        attributes:
+          pnu: 4212
+
+      - name: "A1 override"
+        unique_id: ecl310_a1_override
+        icon: mdi:hand-back-right
+        # Values as in the Danfoss Operating Guide, 6.6 Output override.
+        state: >
+          {{ {'0': 'AUTO', '1': 'OFF', '2': 'ON'}.get(states('sensor.a1_override_raw'), 'unknown') }}
+        attributes:
+          pnu: 4069
+
+      # V1/V2 0–10 V valve signals: override AUTO or ON (fixed %). PNU 4076 (V1) / 4077 (V2) sit
+      # on the M1/M2 hand symbols in the Danfoss drawing.
+      - name: "V1 override"
+        unique_id: ecl310_v1_override
+        icon: mdi:hand-back-right
+        state: "{{ ('AUTO' if states('sensor.m1_override_2_raw') | int == 0 else 'ON') if states('sensor.m1_override_2_raw') | is_number else 'unknown' }}"
+        attributes:
+          pnu: 4076
+
+      - name: "V2 override"
+        unique_id: ecl310_v2_override
+        icon: mdi:hand-back-right
+        state: "{{ ('AUTO' if states('sensor.m2_override_2_raw') | int == 0 else 'ON') if states('sensor.m2_override_2_raw') | is_number else 'unknown' }}"
+        attributes:
+          pnu: 4077
+
+      # Actual minus desired flow temperature: colours S3/S4 on the schematic.
+      - name: "Heating Flow Deviation"
+        unique_id: ecl310_heating_flow_deviation
+        unit_of_measurement: "K"
+        state_class: measurement
+        icon: mdi:plus-minus-variant
+        availability: "{{ states('sensor.s3_flow_temperature_sensor_circuit_1') | is_number and states('sensor.desired_flow_temperature_circuit_1') | is_number }}"
+        state: "{{ (states('sensor.s3_flow_temperature_sensor_circuit_1') | float - states('sensor.desired_flow_temperature_circuit_1') | float) | round(1) }}"
+        attributes:
+          note: "S3 minus desired flow, circuit 1"
+      - name: "DHW Flow Deviation"
+        unique_id: ecl310_dhw_flow_deviation
+        unit_of_measurement: "K"
+        state_class: measurement
+        icon: mdi:plus-minus-variant
+        availability: "{{ states('sensor.s4_dhw_flow_temperature_sensor_circuit_2') | is_number and states('sensor.desired_dhw_flow_temperature_circuit_2') | is_number }}"
+        state: "{{ (states('sensor.s4_dhw_flow_temperature_sensor_circuit_2') | float - states('sensor.desired_dhw_flow_temperature_circuit_2') | float) | round(1) }}"
+        attributes:
+          note: "S4 minus desired DHW temperature, circuit 2"
+
+      - name: "ECL Controller Time"
+        unique_id: ecl310_controller_time
+        icon: mdi:clock-outline
+        availability: >
+          {{ ['sensor.ecl_clock_hour_raw', 'sensor.ecl_clock_minute_raw', 'sensor.ecl_clock_day_raw',
+              'sensor.ecl_clock_month_raw', 'sensor.ecl_clock_year_raw']
+             | map('states') | select('is_number') | list | count == 5 }}
+        state: >
+          {% set months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                           'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] %}
+          {{ states('sensor.ecl_clock_day_raw') | int }} {{ months[states('sensor.ecl_clock_month_raw') | int - 1] }}
+          {{- ' ' ~ states('sensor.ecl_clock_year_raw') | int }},
+          {{- ' %02d:%02d' | format(states('sensor.ecl_clock_hour_raw') | int, states('sensor.ecl_clock_minute_raw') | int) }}
+        attributes:
+          pnu: "64045–64049"
+          note: "Controller clock as set in the ECL, not Home Assistant time."
+
+      - name: "ECL Application"
+        unique_id: ecl310_application
+        icon: mdi:application-cog
+        availability: >
+          {{ ['sensor.ecl_application_prefix_raw', 'sensor.ecl_application_type_raw',
+              'sensor.ecl_application_subtype_raw'] | map('states') | select('is_number') | list | count == 3 }}
+        state: >
+          {{ '%c' | format(states('sensor.ecl_application_prefix_raw') | int) }}
+          {{- states('sensor.ecl_application_type_raw') | int }}.{{ states('sensor.ecl_application_subtype_raw') | int }}
+        attributes:
+          pnu: "2060–2062"
+
+      - name: "ECL Firmware Version"
+        unique_id: ecl310_firmware_version
+        icon: mdi:chip
+        availability: "{{ states('sensor.ecl_software_version_raw') | is_number }}"
+        state: >
+          {% set v = states('sensor.ecl_software_version_raw') | int %}
+          {{ '%d.%02d' | format(v // 256, v % 256) }}
+        attributes:
+          pnu: 35
+
+  - binary_sensor:
+      - name: "ECL Modbus Online"
+        unique_id: ecl310_modbus_online
+        device_class: connectivity
+        state: "{{ states('sensor.s1_outdoor_temperature_sensor') not in ['unavailable', 'unknown'] }}"
+
+      # --- Decoded outputs for dashboards (the *_raw registers stay for diagnostics) ---
+
+      - name: "P2 Heating Pump"
+        unique_id: ecl310_p2_heating_pump_running
+        device_class: running
+        availability: "{{ states('sensor.p2_circulation_pump_heating_raw') | is_number }}"
+        state: "{{ states('sensor.p2_circulation_pump_heating_raw') | int == 1 }}"
+        attributes:
+          pnu: 4007
+
+      - name: "P1 DHW Circulation Pump"
+        unique_id: ecl310_p1_dhw_pump_running
+        device_class: running
+        availability: "{{ states('sensor.p1_circulation_pump_dhw_raw') | is_number }}"
+        state: "{{ states('sensor.p1_circulation_pump_dhw_raw') | int == 1 }}"
+        attributes:
+          pnu: 4006
+
+      - name: "ECL Alarm"
+        unique_id: ecl310_alarm_active
+        device_class: problem
+        availability: "{{ states('sensor.a1_alarm_raw') | is_number }}"
+        state: "{{ states('sensor.a1_alarm_raw') | int != 0 }}"
+        attributes:
+          pnu: 4009
+
+      # Manual override: on when the output is not in Auto (register value 0).
+      # M1/M2 have two override registers on the same spot in the Danfoss UI.
+      - name: "M2 Manual Override"
+        unique_id: ecl310_m2_manual_override
+        device_class: problem
+        state: >
+          {{ ['sensor.m2_override_raw', 'sensor.m2_override_2_raw'] | map('states')
+             | select('is_number') | map('int') | select('ne', 0) | list | count > 0 }}
+        attributes:
+          pnu: "4062 / 4077"
+
+      - name: "M1 Manual Override"
+        unique_id: ecl310_m1_manual_override
+        device_class: problem
+        state: >
+          {{ ['sensor.m1_override_raw', 'sensor.m1_override_2_raw'] | map('states')
+             | select('is_number') | map('int') | select('ne', 0) | list | count > 0 }}
+        attributes:
+          pnu: "4060 / 4076"
+
+      - name: "P2 Manual Override"
+        unique_id: ecl310_p2_manual_override
+        device_class: problem
+        state: "{{ states('sensor.p2_override_raw') | int(0) != 0 }}"
+        attributes:
+          pnu: 4067
+
+      - name: "P1 Manual Override"
+        unique_id: ecl310_p1_manual_override
+        device_class: problem
+        state: "{{ states('sensor.p1_override_raw') | int(0) != 0 }}"
+        attributes:
+          pnu: 4066
+
+      - name: "A1 Manual Override"
+        unique_id: ecl310_a1_manual_override
+        device_class: problem
+        state: "{{ states('sensor.a1_override_raw') | int(0) != 0 }}"
+        attributes:
+          pnu: 4069

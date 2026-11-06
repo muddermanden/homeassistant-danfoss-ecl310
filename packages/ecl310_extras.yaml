@@ -1,0 +1,73 @@
+# packages/ecl310_extras.yaml  ->  copy to /config/packages/ (optional)
+#
+# OPTIONAL. These template sensors combine the ECL 310 with hardware that is NOT
+# part of the controller. Only install this file if you have equivalents, and
+# rename the entity ids below to match your own devices:
+#
+#   Heat meter read over wireless M-Bus (wmbusmeters add-on -> MQTT), here "varme_c5":
+#     sensor.varme_c5_flow_temperature, sensor.varme_c5_return_temperature,
+#     sensor.varme_c5_volume_flow, binary_sensor.varme_c5_alarm / _error /
+#     _permanent_error / _temporary_error / _power_low / _busy
+#   Grundfos circulation pump with an ESPHome bridge:
+#     sensor.heating_pump_flow (m³/h)
+#
+# Requires ecl310.yaml (uses its S3, V1 and desired-return sensors).
+
+template:
+  - sensor:
+      # Heat meter (wmbusmeters, varme_c5): one readable line instead of seven OK/Problem flags.
+      - name: "Heat Meter Faults"
+        unique_id: varme_c5_faults
+        icon: mdi:meter-electric
+        state: >
+          {% set flags = {
+            'binary_sensor.varme_c5_alarm': 'Alarm',
+            'binary_sensor.varme_c5_error': 'Error',
+            'binary_sensor.varme_c5_permanent_error': 'Permanent error',
+            'binary_sensor.varme_c5_temporary_error': 'Temporary error',
+            'binary_sensor.varme_c5_power_low': 'Power low',
+            'binary_sensor.varme_c5_busy': 'Busy'} %}
+          {% set active = flags.items() | selectattr(0, 'is_state', 'on') | map(attribute=1) | list %}
+          {{ active | join(', ') if active else 'No faults' }}
+
+      # District-heating return (heat meter) minus the ECL return limit for circuit 1: red on the schematic when > 0.
+      - name: "Return Limit Deviation"
+        unique_id: ecl310_return_limit_deviation
+        unit_of_measurement: "K"
+        state_class: measurement
+        icon: mdi:plus-minus-variant
+        availability: "{{ states('sensor.varme_c5_return_temperature') | is_number and states('sensor.desired_return_temperature_circuit_1') | is_number }}"
+        state: "{{ (states('sensor.varme_c5_return_temperature') | float - states('sensor.desired_return_temperature_circuit_1') | float) | round(1) }}"
+
+      # Radiator loop return, estimated from the mixing balance at T1 (no sensor in the bypass):
+      #   Q_pump * S3 = Q_in * T_supply + (Q_pump - Q_in) * T_bypass
+      # Q_in is the heat meter flow, which also contains the DHW flow. With Q_in >= Q_pump the bypass carries no
+      # flow, so the loop return is the measured district return; while hot water is drawn (V1 open) the last
+      # value is held.
+      # With Q_in = 0 the meter sends nothing (its temperatures are frozen) and no district water enters: the loop
+      # just recirculates through the bypass, so the loop return = S3 (mode "recirculating").
+      - name: "Radiator Loop Return Estimated"
+        unique_id: radiator_loop_return_estimated
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        availability: >
+          {{ [states('sensor.heating_pump_flow'), states('sensor.varme_c5_volume_flow'), states('sensor.s3_flow_temperature_sensor_circuit_1'), states('sensor.varme_c5_flow_temperature'), states('sensor.varme_c5_return_temperature')]
+             | select('is_number') | list | count == 5 }}
+        state: >
+          {% set qp, qi = states('sensor.heating_pump_flow') | float, states('sensor.varme_c5_volume_flow') | float %}
+          {% set s3, sup, ret = states('sensor.s3_flow_temperature_sensor_circuit_1') | float, states('sensor.varme_c5_flow_temperature') | float, states('sensor.varme_c5_return_temperature') | float %}
+          {% if states('sensor.v1_analog_valve_dhw_circuit_2') | float(0) > 0 %}{{ this.state if this.state | is_number else none }}
+          {% elif qi <= 0.0005 %}{{ s3 | round(1) }}
+          {% elif qi >= qp %}{{ ret | round(1) }}
+          {% else %}{{ ([[ (qp * s3 - qi * sup) / (qp - qi), ret ] | max, s3] | min) | round(1) }}{% endif %}
+        attributes:
+          held: "{{ states('sensor.v1_analog_valve_dhw_circuit_2') | float(0) > 0 }}"
+          mode: >
+            {% set qi, qp = states('sensor.varme_c5_volume_flow') | float(0), states('sensor.heating_pump_flow') | float(0) %}
+            {{ 'held' if states('sensor.v1_analog_valve_dhw_circuit_2') | float(0) > 0
+               else 'recirculating' if qi <= 0.0005 else 'measured' if qi >= qp else 'estimated' }}
+          formula: "(Q_pump*S3 - Q_in*T_supply) / (Q_pump - Q_in), clamped to [return, S3]"
+          note: >-
+            Q_in is the heat meter flow (includes DHW). No bypass flow (Q_in >= Q_pump): the loop return is the
+            measured district return. Held at the last value while hot water is drawn (V1 open).
