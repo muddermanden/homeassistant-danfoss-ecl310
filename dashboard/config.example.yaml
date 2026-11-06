@@ -20,7 +20,7 @@ tv_image_url: /local/heating/a266-schematic-tv.svg
 features:
   heat_meter: false        # district-heating meter (e.g. wmbusmeters → MQTT) + packages/ecl310_extras.yaml
   circulation_pump: false  # circulation pump with its own sensors (e.g. Grundfos via ESPHome)
-  rooms: false             # room statistics from dashboard/heating_dashboard.yaml (label "Heated room")
+  rooms: false             # room statistics from packages/heating_rooms.yaml (label "Heated room")
 
 # Drawing variants. direct_heating redraws circuit 1 as direct heating with a mixing loop (the author's house);
 # off = the original Danfoss A266.1 drawing with heat exchanger 1.

@@ -1,4 +1,4 @@
-# dashboard/heating_dashboard.yaml  ->  copy to /config/packages/ (needed by the generated dashboard)
+# packages/heating_rooms.yaml  ->  copy to /config/packages/ (needed by the generated schematic dashboard)
 # Room temperature statistics for rooms heated by radiators (directly or from a neighbouring room).
 # Members: every sensor.* entity with the label "Heated room" (label_id heated_room).
 # A newly labelled sensor is picked up the next time any member changes.
