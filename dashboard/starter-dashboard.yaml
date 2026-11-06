@@ -4,8 +4,8 @@
 # Settings → Dashboards → Add dashboard → "New dashboard from scratch" → ⋮ → Edit → ⋮ → Raw configuration
 # editor → paste this file.
 #
-# The schematic card needs your own copy of the Danfoss A266 drawing as /config/www/ecl310/a266.png
-# (served as /local/ecl310/a266.png). See dashboard/README.md. Without it, delete that card.
+# The schematic card needs your own copy of the Danfoss A266 drawing as /config/www/ecl310/a266.svg
+# (served as /local/ecl310/a266.svg). See dashboard/README.md, "Get the drawing". Without it, delete that card.
 # The left/top positions fit the 1205x756 px A266.1 drawing; adjust them if your drawing differs.
 
 title: Heating
@@ -28,7 +28,7 @@ views:
           - type: heading
             heading: Schematic
           - type: picture-elements
-            image: /local/ecl310/a266.png
+            image: /local/ecl310/a266.svg
             grid_options: {columns: full}
             elements:
             # Controller time
