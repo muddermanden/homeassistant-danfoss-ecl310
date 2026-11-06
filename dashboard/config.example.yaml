@@ -40,7 +40,7 @@ network_tracker:           # e.g. device_tracker.ecl310 (UniFi) for IP/MAC rows 
 modbus_host_attribute: false  # true if your binary_sensor.ecl_modbus_online has a 'host' attribute
 pump_wiring_swapped_entity:   # binary_sensor that is on while P1/P2 are wired to swapped terminals
 
-heat_cut_out_c: 20         # your ECL "Heat cut-out" setting (PNU 11179): summer label above this outdoor temperature
+heat_cut_out_c: 20         # your ECL "Summer, cut-out" setting (ID 11179): summer label above this outdoor temperature
 rooms_label: heated_room   # label id of the room temperature sensors (features.rooms)
 other_rooms: []            # rooms shown but not counted: [{name: Garage, entity: sensor.garage_temperature}]
 overview:
