@@ -1,6 +1,6 @@
 # Copy to config.local.yaml (git-ignored) and edit. Paths are relative to this file.
 #   cp config.example.yaml config.local.yaml
-#   python generator/build.py --config config.local.yaml
+#   .venv/bin/python generator/build.py --config config.local.yaml
 
 # Your copy of the Danfoss A266 drawing (SVG from Leanheat Monitor, cleaned with generator/clean_drawing.py,
 # see README). Not in the repo.
