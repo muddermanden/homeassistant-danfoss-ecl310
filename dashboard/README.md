@@ -6,6 +6,19 @@ it with your `config.local.yaml` and writes `build/heating-dashboard.yaml`, whic
 repo) reproduces it exactly. A finished dashboard file isn't committed for two reasons. Its pump, valve and pipe
 overlays are pieces of the Danfoss drawing (copyright), and it is full of one house's entity ids.
 
+## What to expect
+
+Screenshots of the author's generated dashboard. Drawing © Danfoss; values live from the author's ECL 310.
+
+![Overview with the schematic (desktop)](screenshots/overview-desktop.png)
+
+| Space heating view | Phone | TV view |
+|---|---|---|
+| ![Space heating view](screenshots/space-heating-desktop.png) | ![Overview on a phone](screenshots/overview-phone.png) | ![TV view](screenshots/tv.png) |
+
+The author's setup has every option on (heat meter, circulation pump, rooms, direct-heating variant). With
+`config.example.yaml` you get the same schematic without those values, on the original Danfoss drawing.
+
 Two ways to get the ECL 310 into a dashboard:
 
 | | What | Needs |
