@@ -2,8 +2,11 @@
 #   cp config.example.yaml config.local.yaml
 #   python generator/build.py --config config.local.yaml
 
-# Your copy of the Danfoss A266 drawing (SVG from Leanheat Monitor, see README). Not in the repo.
+# Your copy of the Danfoss A266 drawing (SVG from Leanheat Monitor, cleaned with generator/clean_drawing.py,
+# see README). Not in the repo.
 drawing: drawings/a266.svg
+# Section titles clean_drawing.py writes over the two "Circuit description" placeholders.
+circuit_titles: [Space heating, Domestic hot water]
 # Where the generated dashboard YAML/JSON and background SVGs are written (git-ignored).
 output_dir: build
 

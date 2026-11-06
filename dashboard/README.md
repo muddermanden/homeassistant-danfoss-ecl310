@@ -32,7 +32,16 @@ same diagram for your controller:
 3. Reload the page (Cmd/Ctrl + R) so the requests are recorded.
 4. Type `svg` in the filter box (and `drawio` for the editable source). Click the request with the diagram,
    e.g. `A266_1...svg`, and save the response (right-click → *Open in new tab* → save, or copy the response).
-5. Save it as `dashboard/drawings/a266.svg`. The `drawings/` folder is git-ignored, so it never gets committed.
+5. Save it in `dashboard/drawings/`, e.g. as `A266.1a.svg`. The `drawings/` folder is git-ignored, so it never
+   gets committed.
+6. Clean it: this removes the empty value fields (`--,-- °C`, `1st Jan 1970`) that Home Assistant replaces with
+   live values, and names the two circuits (`circuit_titles` in the config):
+
+   ```bash
+   python3 generator/clean_drawing.py drawings/A266.1a.svg drawings/a266.svg --config config.local.yaml
+   ```
+
+   It should report `placeholders left: 0`.
 
 Use the drawing for yourself and respect Danfoss's terms. Don't publish it.
 
